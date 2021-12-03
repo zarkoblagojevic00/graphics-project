@@ -39,7 +39,7 @@ namespace AssimpSample
         /// <summary>
         ///	 Udaljenost scene od kamere.
         /// </summary>
-        private float m_sceneDistance = 7000.0f;
+        private float m_sceneDistance = 2500.0f;
 
         /// <summary>
         ///	 Sirina OpenGL kontrole u pikselima.
@@ -55,13 +55,13 @@ namespace AssimpSample
 
         private readonly AssimpScene m_motorcycleScene;
 
-        private readonly float m_motorcycleScale = 0.1f;
+        private readonly float m_motorcycleScale = 0.01f;
 
-        private readonly float m_trafficLightScale = 100.0f;
+        private readonly float m_trafficLightScale = 10.0f;
 
-        private readonly float m_groundScaleX = 5000.0f;
+        private readonly float m_groundScaleX = 1000.0f;
         
-        private readonly float m_groundScaleZ = 10000.0f;
+        private readonly float m_groundScaleZ = 1500.0f;
         
         private readonly float[] m_groundVertices = new float[] {
             1.0f, 0.0f,-1.0f,
@@ -189,15 +189,13 @@ namespace AssimpSample
             gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
 
             gl.PushMatrix();
-            gl.Translate(0.0f, -500.0f, -m_sceneDistance);
+            gl.Translate(0.0f, -50.0f, -m_sceneDistance);
             gl.Rotate(m_xRotation, 1.0f, 0.0f, 0.0f);
             gl.Rotate(m_yRotation, 0.0f, 1.0f, 0.0f);
 
             PositionGround(gl);
-            PositionTrafficLight(gl);
-            PositionMotorcycle(gl);
-
-
+            PositionModels(gl);
+            PositionBuildings(gl);
             gl.PopMatrix();
             // Oznaci kraj iscrtavanja
             gl.Flush();
@@ -218,6 +216,16 @@ namespace AssimpSample
             gl.End();
         }
 
+        private void PositionModels(OpenGL gl)
+        {
+            gl.PushMatrix();
+            gl.Translate(-150.0f, 0.0f, 85.0f);
+            PositionTrafficLight(gl);
+            PositionMotorcycle(gl);
+            gl.PopMatrix();
+
+        }
+
         private void PositionTrafficLight(OpenGL gl)
         {
             gl.PushMatrix();
@@ -229,10 +237,32 @@ namespace AssimpSample
         private void PositionMotorcycle(OpenGL gl)
         {
             gl.PushMatrix();
-            gl.Translate(600.0f, 100.0f, 1000.0f);
+            gl.Translate(60.0f, 10.0f, 100.0f);
             gl.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
             gl.Scale(m_motorcycleScale, m_motorcycleScale, m_motorcycleScale);
             m_motorcycleScene.Draw();
+            gl.PopMatrix();
+        }
+
+        private void PositionBuildings(OpenGL gl)
+        {
+            Cube building = new Cube();
+
+            gl.PushMatrix();
+
+            gl.Translate(-700.0f, 700.0f, 500.0f);
+            gl.Scale(250.0f, 700.0f, 350.0f);
+            building.Render(gl, RenderMode.Render);
+
+            gl.Translate(5.6f, 0.0f, 0.0f);
+            building.Render(gl, RenderMode.Render);
+
+            gl.Translate(0.0f, 0.0f, -4.0f);
+            building.Render(gl, RenderMode.Render);
+
+            gl.Translate(-5.6f, 0.0f, 0.0f);
+            building.Render(gl, RenderMode.Render);
+
             gl.PopMatrix();
         }
 
