@@ -73,6 +73,8 @@ namespace AssimpSample
         private readonly Cylinder m_post;
 
         private readonly float m_spaceBetweenPosts = 400.0f;
+        
+        private readonly float m_roadWidth = 520.0f;
 
         #endregion Atributi
 
@@ -169,8 +171,7 @@ namespace AssimpSample
         public void Initialize(OpenGL gl)
         {
             gl.ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-            gl.Color(1f, 0f, 0f);
-            // Model sencenja na flat (konstantno)
+            
 
             gl.ShadeModel(OpenGL.GL_FLAT);
             gl.Enable(OpenGL.GL_CULL_FACE);
@@ -201,6 +202,7 @@ namespace AssimpSample
             PositionGround(gl);
             PositionModels(gl);
             PositionBuildings(gl);
+            PositionText(gl);
 
             gl.PopMatrix();
             // Oznaci kraj iscrtavanja
@@ -256,6 +258,10 @@ namespace AssimpSample
             gl.Translate(0.0f, 0.0f, m_spaceBetweenPosts);
             CreateLampPost(gl, m_post);
             gl.Translate(0.0f, 0.0f, m_spaceBetweenPosts);
+            CreateLampPost(gl, m_post);
+            gl.Translate(m_roadWidth, 0.0f, 0.0f);
+            CreateLampPost(gl, m_post);
+            gl.Translate(0.0f, 0.0f, -m_spaceBetweenPosts);
             CreateLampPost(gl, m_post);
             gl.PopMatrix();
         }
@@ -313,7 +319,26 @@ namespace AssimpSample
             gl.PopMatrix();
         }
 
-        
+        private void PositionText(OpenGL gl)
+        {
+            string textSubject = "Predmet: Racunarska grafika";
+            string textSchoolYear = "Sk.god: 2021 / 22.";
+            string textName = "Ime: Zarko";
+            string textSurname = "Prezime: Blagojevic";
+            string textAssignment = "Sifra zad: 11.1";
+
+            int offsetHeight = 32;
+            int wpWidth = 150;
+            gl.Viewport(m_width - wpWidth, 0, wpWidth , m_height / 3);
+            gl.DrawText(0, wpWidth, 0.5294f, 0.8078f, 0.9216f, "Arial Italic", 10.0f, textSubject);
+            gl.DrawText(0, wpWidth - 1 * offsetHeight, 0.5294f, 0.8078f, 0.9216f, "Arial Italic", 10.0f, textSchoolYear);
+            gl.DrawText(0, wpWidth - 2 * offsetHeight, 0.5294f, 0.8078f, 0.9216f, "Arial Italic", 10.0f, textName);
+            gl.DrawText(0, wpWidth - 3 * offsetHeight, 0.5294f, 0.8078f, 0.9216f, "Arial Italic", 10.0f, textSurname);
+            gl.DrawText(0, wpWidth - 4 * offsetHeight, 0.5294f, 0.8078f, 0.9216f, "Arial Italic", 10.0f, textAssignment);
+            gl.Viewport(0, 0, m_width, m_height);
+
+        }
+
         /// <summary>
         /// Podesava viewport i projekciju za OpenGL kontrolu.
         /// </summary>
@@ -324,7 +349,7 @@ namespace AssimpSample
             gl.Viewport(0, 0, m_width, m_height);
             gl.MatrixMode(OpenGL.GL_PROJECTION);      // selektuj Projection Matrix
             gl.LoadIdentity();
-            gl.Perspective(45f, (double)width / height, 0.5f, 20000f);
+            gl.Perspective(45f, (double)width / height, 0.5f, 10000f);
             gl.MatrixMode(OpenGL.GL_MODELVIEW);
             gl.LoadIdentity();                // resetuj ModelView Matrix
         }
