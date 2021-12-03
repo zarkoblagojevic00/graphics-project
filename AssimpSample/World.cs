@@ -57,7 +57,7 @@ namespace AssimpSample
 
         private readonly float m_motorcycleScale = 0.01f;
 
-        private readonly float m_trafficLightScale = 10.0f;
+        private readonly float m_trafficLightScale = 15.0f;
 
         private readonly float m_groundScaleX = 1000.0f;
         
@@ -70,6 +70,9 @@ namespace AssimpSample
             1.0f, 0.0f, 1.0f,
         };
 
+        private readonly Cylinder m_post;
+
+        private readonly float m_spaceBetweenPosts = 400.0f;
 
         #endregion Atributi
 
@@ -130,6 +133,9 @@ namespace AssimpSample
         /// </summary>
         public World(int width, int height, OpenGL gl)
         {
+            this.m_width = width;
+            this.m_height = height;
+
             var motorcyclePath = CreatePath("Motorcycle");
             var motorcycleFileName = "DUC916_L.3DS";
             this.m_motorcycleScene = new AssimpScene(motorcyclePath, motorcycleFileName, gl);
@@ -138,8 +144,7 @@ namespace AssimpSample
             var trafficLightFileName = "trafficlight.obj";
             this.m_trafficLightScene = new AssimpScene(trafficLightPath, trafficLightFileName, gl);
 
-            this.m_width = width;
-            this.m_height = height;
+            this.m_post = CreatePost(gl);
         }
 
         /// <summary>
@@ -196,6 +201,7 @@ namespace AssimpSample
             PositionGround(gl);
             PositionModels(gl);
             PositionBuildings(gl);
+
             gl.PopMatrix();
             // Oznaci kraj iscrtavanja
             gl.Flush();
@@ -219,11 +225,11 @@ namespace AssimpSample
         private void PositionModels(OpenGL gl)
         {
             gl.PushMatrix();
-            gl.Translate(-150.0f, 0.0f, 85.0f);
+            gl.Translate(-250.0f, 0.0f, 80.0f);
             PositionTrafficLight(gl);
             PositionMotorcycle(gl);
+            PositionLampPosts(gl);
             gl.PopMatrix();
-
         }
 
         private void PositionTrafficLight(OpenGL gl)
@@ -237,27 +243,68 @@ namespace AssimpSample
         private void PositionMotorcycle(OpenGL gl)
         {
             gl.PushMatrix();
-            gl.Translate(60.0f, 10.0f, 100.0f);
+            gl.Translate(100.0f, 10.0f, 100.0f);
             gl.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
             gl.Scale(m_motorcycleScale, m_motorcycleScale, m_motorcycleScale);
             m_motorcycleScene.Draw();
             gl.PopMatrix();
         }
 
+        private void PositionLampPosts(OpenGL gl)
+        {
+            gl.PushMatrix();
+            gl.Translate(0.0f, 0.0f, m_spaceBetweenPosts);
+            CreateLampPost(gl, m_post);
+            gl.Translate(0.0f, 0.0f, m_spaceBetweenPosts);
+            CreateLampPost(gl, m_post);
+            gl.PopMatrix();
+        }
+
+        private Cylinder CreatePost(OpenGL gl)
+        {
+            Cylinder post = new Cylinder();
+            var postRadius = 4.5f;
+            post.BaseRadius = postRadius;
+            post.TopRadius = postRadius;
+            post.Height = 165;
+            post.Slices = 100;
+            post.Stacks = 20;
+            post.CreateInContext(gl);
+            return post;
+        }
+
+        private static void CreateLampPost(OpenGL gl, Cylinder post)
+        {
+            Cube lamp = new Cube();
+            var lampEdge = 7.5f;
+            
+            gl.PushMatrix();
+            gl.Color(0.3f, 0.3f, 0.3f);
+            gl.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
+            post.Render(gl, RenderMode.Render);
+            gl.PopMatrix();
+            
+            gl.PushMatrix();
+            gl.Color(0.65f, 0.35f, 0.0f);
+            gl.Translate(0.0f, post.Height + lampEdge/2, 0.0f);
+            gl.Scale(lampEdge, lampEdge, lampEdge);
+            lamp.Render(gl, RenderMode.Render);
+            gl.PopMatrix();
+        }
+
         private void PositionBuildings(OpenGL gl)
         {
             Cube building = new Cube();
-
             gl.PushMatrix();
-
-            gl.Translate(-700.0f, 700.0f, 500.0f);
+            gl.Color(0.22f, 0.28f, 0.31f);
+            gl.Translate(-700.0f, 700.0f, 600.0f);
             gl.Scale(250.0f, 700.0f, 350.0f);
             building.Render(gl, RenderMode.Render);
 
             gl.Translate(5.6f, 0.0f, 0.0f);
             building.Render(gl, RenderMode.Render);
 
-            gl.Translate(0.0f, 0.0f, -4.0f);
+            gl.Translate(0.0f, 0.0f, -4.8f);
             building.Render(gl, RenderMode.Render);
 
             gl.Translate(-5.6f, 0.0f, 0.0f);
@@ -266,7 +313,7 @@ namespace AssimpSample
             gl.PopMatrix();
         }
 
-
+        
         /// <summary>
         /// Podesava viewport i projekciju za OpenGL kontrolu.
         /// </summary>
