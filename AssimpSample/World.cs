@@ -55,16 +55,27 @@ namespace AssimpSample
 
         private readonly AssimpScene m_motorcycleScene;
 
-        private float m_motorcycleScale = 0.1f;
+        private readonly float m_motorcycleScale = 0.1f;
 
-        private float m_trafficLightScale = 100f;
+        private readonly float m_trafficLightScale = 100.0f;
+
+        private readonly float m_groundScaleX = 5000.0f;
+        
+        private readonly float m_groundScaleZ = 10000.0f;
+        
+        private readonly float[] m_groundVertices = new float[] {
+            1.0f, 0.0f,-1.0f,
+           -1.0f, 0.0f,-1.0f,
+           -1.0f, 0.0f, 1.0f,
+            1.0f, 0.0f, 1.0f,
+        };
 
 
         #endregion Atributi
 
         #region Properties
 
-        
+
         /// <summary>
         ///	 Ugao rotacije sveta oko X ose.
         /// </summary>
@@ -159,11 +170,15 @@ namespace AssimpSample
             gl.ShadeModel(OpenGL.GL_FLAT);
             gl.Enable(OpenGL.GL_CULL_FACE);
             gl.Enable(OpenGL.GL_DEPTH_TEST);
+            SetScenes();
+        }
+
+        private void SetScenes()
+        {
             m_motorcycleScene.LoadScene();
             m_motorcycleScene.Initialize();
             m_trafficLightScene.LoadScene();
             m_trafficLightScene.Initialize();
-
         }
 
         /// <summary>
@@ -178,13 +193,29 @@ namespace AssimpSample
             gl.Rotate(m_xRotation, 1.0f, 0.0f, 0.0f);
             gl.Rotate(m_yRotation, 0.0f, 1.0f, 0.0f);
 
+            PositionGround(gl);
             PositionTrafficLight(gl);
-
             PositionMotorcycle(gl);
+
 
             gl.PopMatrix();
             // Oznaci kraj iscrtavanja
             gl.Flush();
+        }
+
+        private void PositionGround(OpenGL gl)
+        {
+            gl.Color(0.1f, 0.1f, 0.1f);
+            gl.Begin(OpenGL.GL_QUADS);
+
+            for (int i = 0; i < m_groundVertices.Length; i += 3)
+            {
+                gl.Vertex(
+                    m_groundScaleX * m_groundVertices[i],
+                              1.0f * m_groundVertices[i + 1],
+                    m_groundScaleZ * m_groundVertices[i + 2]);
+            }
+            gl.End();
         }
 
         private void PositionTrafficLight(OpenGL gl)
