@@ -50,7 +50,6 @@ namespace AssimpSample
         ///	 Visina OpenGL kontrole u pikselima.
         /// </summary>
         private int m_height;
-
         private readonly AssimpScene m_trafficLightScene;
 
         private readonly AssimpScene m_motorcycleScene;
@@ -59,9 +58,9 @@ namespace AssimpSample
 
         private readonly float m_trafficLightScale = 15.0f;
 
-        private readonly float m_groundScaleX = 1000.0f;
+        private readonly float m_groundScaleX = 2000.0f;
         
-        private readonly float m_groundScaleZ = 1500.0f;
+        private readonly float m_groundScaleZ = 1800.0f;
         
         private readonly float[] m_groundVertices = new float[] {
             1.0f, 0.0f,-1.0f,
@@ -76,15 +75,19 @@ namespace AssimpSample
         
         private readonly float m_roadWidth = 520.0f;
 
-        #endregion Atributi
+        private float[] m_yellowLightingPosition = new float[] { 300.0f, 2000.0f, 0f, 1.0f };
 
-        #region Properties
+        private float[] m_yellowLightingAmbient = new float[] { 1.0f, 1.0f, 0.0f, 1.0f };
+
+    #endregion Atributi
+
+    #region Properties
 
 
-        /// <summary>
-        ///	 Ugao rotacije sveta oko X ose.
-        /// </summary>
-        public float RotationX
+    /// <summary>
+    ///	 Ugao rotacije sveta oko X ose.
+    /// </summary>
+    public float RotationX
         {
             get { return m_xRotation; }
             set { m_xRotation = value; }
@@ -135,18 +138,18 @@ namespace AssimpSample
         /// </summary>
         public World(int width, int height, OpenGL gl)
         {
-            this.m_width = width;
-            this.m_height = height;
+            m_width = width;
+            m_height = height;
 
-            var motorcyclePath = CreatePath("Motorcycle");
-            var motorcycleFileName = "DUC916_L.3DS";
-            this.m_motorcycleScene = new AssimpScene(motorcyclePath, motorcycleFileName, gl);
-            
-            var trafficLightPath = CreatePath("TrafficLight");
-            var trafficLightFileName = "trafficlight.obj";
-            this.m_trafficLightScene = new AssimpScene(trafficLightPath, trafficLightFileName, gl);
+            string motorcyclePath = CreatePath("Motorcycle");
+            string motorcycleFileName = "DUC916_L.3DS";
+            m_motorcycleScene = new AssimpScene(motorcyclePath, motorcycleFileName, gl);
 
-            this.m_post = CreatePost(gl);
+            string trafficLightPath = CreatePath("TrafficLight");
+            string trafficLightFileName = "trafficlight.obj";
+            m_trafficLightScene = new AssimpScene(trafficLightPath, trafficLightFileName, gl);
+
+            m_post = CreatePost(gl);
         }
 
         /// <summary>
@@ -154,7 +157,7 @@ namespace AssimpSample
         /// </summary>
         ~World()
         {
-            this.Dispose(false);
+            Dispose(false);
         }
 
         #endregion Konstruktori
@@ -171,12 +174,18 @@ namespace AssimpSample
         public void Initialize(OpenGL gl)
         {
             gl.ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-            
 
-            gl.ShadeModel(OpenGL.GL_FLAT);
+            gl.ShadeModel(OpenGL.GL_SMOOTH);
             gl.Enable(OpenGL.GL_CULL_FACE);
             gl.Enable(OpenGL.GL_DEPTH_TEST);
             SetScenes();
+
+            // 2.1
+            gl.ColorMaterial(OpenGL.GL_FRONT, OpenGL.GL_AMBIENT_AND_DIFFUSE);
+            gl.Enable(OpenGL.GL_COLOR_MATERIAL);
+
+            gl.Enable(OpenGL.GL_LIGHTING);
+            gl.Enable(OpenGL.GL_NORMALIZE);
         }
 
         private void SetScenes()
@@ -203,6 +212,7 @@ namespace AssimpSample
             PositionModels(gl);
             PositionBuildings(gl);
             PositionText(gl);
+            PositionYellowLight(gl);
 
             gl.PopMatrix();
             // Oznaci kraj iscrtavanja
@@ -213,6 +223,7 @@ namespace AssimpSample
         {
             gl.Color(0.1f, 0.1f, 0.1f);
             gl.Begin(OpenGL.GL_QUADS);
+            gl.Normal(0.0f, 1.0f, 0.0f);
 
             for (int i = 0; i < m_groundVertices.Length; i += 3)
             {
@@ -256,53 +267,74 @@ namespace AssimpSample
         {
             gl.PushMatrix();
             gl.Translate(0.0f, 0.0f, m_spaceBetweenPosts);
-            CreateLampPost(gl, m_post);
+            CreateLampPost(gl);
             gl.Translate(0.0f, 0.0f, m_spaceBetweenPosts);
-            CreateLampPost(gl, m_post);
+            CreateLampPost(gl);
             gl.Translate(m_roadWidth, 0.0f, 0.0f);
-            CreateLampPost(gl, m_post);
+            CreateLampPost(gl);
             gl.Translate(0.0f, 0.0f, -m_spaceBetweenPosts);
-            CreateLampPost(gl, m_post);
+            CreateLampPost(gl);
             gl.PopMatrix();
         }
 
         private Cylinder CreatePost(OpenGL gl)
         {
             Cylinder post = new Cylinder();
-            var postRadius = 4.5f;
+            float postRadius = 4.5f;
             post.BaseRadius = postRadius;
             post.TopRadius = postRadius;
             post.Height = 165;
             post.Slices = 100;
             post.Stacks = 20;
             post.CreateInContext(gl);
+            post.NormalGeneration = Normals.Smooth;
             return post;
         }
 
-        private static void CreateLampPost(OpenGL gl, Cylinder post)
+        private void CreateLampPost(OpenGL gl)
         {
             Cube lamp = new Cube();
-            var lampEdge = 7.5f;
+            float lampEdge = 7.5f;
             
             gl.PushMatrix();
             gl.Color(0.3f, 0.3f, 0.3f);
             gl.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
-            post.Render(gl, RenderMode.Render);
+            m_post.Render(gl, RenderMode.Render);
             gl.PopMatrix();
             
             gl.PushMatrix();
-            gl.Color(0.65f, 0.35f, 0.0f);
-            gl.Translate(0.0f, post.Height + lampEdge/2, 0.0f);
+            gl.Color(0.6f, 0.6f, 0.6f);
+            gl.Translate(0.0f, m_post.Height + (lampEdge / 2), 0.0f);
             gl.Scale(lampEdge, lampEdge, lampEdge);
+            CreateRedLight(gl);
             lamp.Render(gl, RenderMode.Render);
             gl.PopMatrix();
+        }
+
+        private void CreateRedLight(OpenGL gl)
+        {
+            float[] light1pos = new float[] { 0.0f, 0.0f, 0.0f, 1.0f };
+            float[] light1ambient = new float[] { 1.0f, 0.0f, 0.0f, 1.0f };
+            float[] light1diffuse = new float[] { 0.3f, 0.3f, 0.3f, 1.0f };
+            float[] light1specular = new float[] { 0.8f, 0.8f, 0.8f, 1.0f };
+            float[] spotDirection = new float[] { -1.0f, -1.0f, -1.0f, 0.0f };
+
+            gl.Light(OpenGL.GL_LIGHT1, OpenGL.GL_POSITION, light1pos);
+            gl.Light(OpenGL.GL_LIGHT1, OpenGL.GL_AMBIENT, light1ambient);
+            gl.Light(OpenGL.GL_LIGHT1, OpenGL.GL_DIFFUSE, light1diffuse);
+            gl.Light(OpenGL.GL_LIGHT1, OpenGL.GL_SPECULAR, light1specular);
+
+            gl.Light(OpenGL.GL_LIGHT1, OpenGL.GL_SPOT_CUTOFF, 40.0f);
+            gl.Light(OpenGL.GL_LIGHT1, OpenGL.GL_SPOT_EXPONENT, 5.0f);
+            gl.Light(OpenGL.GL_LIGHT1, OpenGL.GL_SPOT_DIRECTION, spotDirection);
+            gl.Enable(OpenGL.GL_LIGHT1);
         }
 
         private void PositionBuildings(OpenGL gl)
         {
             Cube building = new Cube();
             gl.PushMatrix();
-            gl.Color(0.22f, 0.28f, 0.31f);
+            gl.Color(0.3f, 0.3f, 0.3f);
             gl.Translate(-700.0f, 700.0f, 600.0f);
             gl.Scale(250.0f, 700.0f, 350.0f);
             building.Render(gl, RenderMode.Render);
@@ -336,8 +368,37 @@ namespace AssimpSample
             gl.DrawText(0, wpWidth - 3 * offsetHeight, 0.5294f, 0.8078f, 0.9216f, "Arial Italic", 10.0f, textSurname);
             gl.DrawText(0, wpWidth - 4 * offsetHeight, 0.5294f, 0.8078f, 0.9216f, "Arial Italic", 10.0f, textAssignment);
             gl.Viewport(0, 0, m_width, m_height);
-
         }
+
+        private void PositionYellowLight(OpenGL gl)
+        {
+            float[] light0pos = m_yellowLightingPosition;
+            float[] light0ambient = m_yellowLightingAmbient;
+            float[] light0diffuse = new float[] { 0.3f, 0.3f, 0.3f, 1.0f };
+            float[] light0specular = new float[] { 0.8f, 0.8f, 0.8f, 1.0f };
+
+            // ShowYellowLightPosition(gl, light0pos);
+
+            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_POSITION, light0pos);
+            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_AMBIENT, light0ambient);
+            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_DIFFUSE, light0diffuse);
+            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_SPECULAR, light0specular);
+            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_SPOT_CUTOFF, 180.0f);
+
+            gl.Enable(OpenGL.GL_LIGHT0);
+        }
+
+        private static void ShowYellowLightPosition(OpenGL gl, float[] light0pos)
+        {
+            Cube light = new Cube();
+            gl.PushMatrix();
+            gl.Translate(light0pos[0], light0pos[1], light0pos[2]);
+            gl.Scale(30.0f, 30.0f, 30.0f);
+            light.Render(gl, RenderMode.Render);
+            gl.PopMatrix();
+        }
+
+
 
         /// <summary>
         /// Podesava viewport i projekciju za OpenGL kontrolu.
@@ -375,7 +436,7 @@ namespace AssimpSample
         /// </summary>
         public void Dispose()
         {
-            this.Dispose(true);
+            Dispose(true);
             GC.SuppressFinalize(this);
         }
 
