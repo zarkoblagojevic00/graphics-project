@@ -31,6 +31,10 @@ namespace AssimpSample
         /// </summary>
         World m_world = null;
 
+        readonly float rotationXUpperBoundary = 75.0f;
+        readonly float rotationXLowerBoundary = 5.0f;
+        readonly float sceneDistanceLowerBoundary = 50.0f;
+
         #endregion Atributi
 
         #region Konstruktori
@@ -88,12 +92,12 @@ namespace AssimpSample
         {
             switch (e.Key)
             {
-                case Key.F10: this.Close(); break;
-                case Key.W: m_world.RotationX -= 5.0f; break;
-                case Key.S: m_world.RotationX += 5.0f; break;
-                case Key.A: m_world.RotationY -= 5.0f; break;
-                case Key.D: m_world.RotationY += 5.0f; break;
-                case Key.Add: m_world.SceneDistance -= 125.0f; break;
+                case Key.F4: this.Close(); break;
+                case Key.E: m_world.RotationX = (m_world.RotationX > rotationXLowerBoundary) ? m_world.RotationX - 5.0f : rotationXLowerBoundary; break;
+                case Key.D: m_world.RotationX = (m_world.RotationX < rotationXUpperBoundary) ? m_world.RotationX + 5.0f : rotationXUpperBoundary; ; break;
+                case Key.S: m_world.RotationY -= 5.0f; break;
+                case Key.F: m_world.RotationY += 5.0f; break;
+                case Key.Add: m_world.SceneDistance = (m_world.SceneDistance > sceneDistanceLowerBoundary) ? m_world.SceneDistance - 125.0f : sceneDistanceLowerBoundary; break;
                 case Key.Subtract: m_world.SceneDistance += 125.0f; break;
             }
         }

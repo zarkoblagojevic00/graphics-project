@@ -221,7 +221,7 @@ namespace AssimpSample
 
         private void PositionGround(OpenGL gl)
         {
-            gl.Color(0.1f, 0.1f, 0.1f);
+            gl.Color(0.3f, 0.3f, 0.3f);
             gl.Begin(OpenGL.GL_QUADS);
             gl.Normal(0.0f, 1.0f, 0.0f);
 
