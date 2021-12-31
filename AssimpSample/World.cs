@@ -14,6 +14,8 @@ using SharpGL.SceneGraph.Primitives;
 using SharpGL.SceneGraph.Quadrics;
 using SharpGL.SceneGraph.Core;
 using SharpGL;
+using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace AssimpSample
 {
@@ -69,25 +71,31 @@ namespace AssimpSample
             1.0f, 0.0f, 1.0f,
         };
 
-        private readonly Cylinder m_post;
-
         private readonly float m_spaceBetweenPosts = 400.0f;
         
         private readonly float m_roadWidth = 520.0f;
 
         private float[] m_yellowLightingPosition = new float[] { 300.0f, 2000.0f, 0f, 1.0f };
 
-        private float[] m_yellowLightingAmbient = new float[] { 1.0f, 1.0f, 0.0f, 1.0f };
+        private float[] m_yellowLightingAmbient = new float[] { 0.9f, 0.9f, 0.0f, 0.7f };
 
-    #endregion Atributi
+        private readonly int m_textureCount = 0;
 
-    #region Properties
+        private uint[] m_textureIds = null;
+
+        private string[] m_textureFiles = null;
+
+        private enum TextureObjects { Wood = 0, Concrete };
+
+        #endregion Atributi
+
+        #region Properties
 
 
-    /// <summary>
-    ///	 Ugao rotacije sveta oko X ose.
-    /// </summary>
-    public float RotationX
+        /// <summary>
+        ///	 Ugao rotacije sveta oko X ose.
+        /// </summary>
+        public float RotationX
         {
             get { return m_xRotation; }
             set { m_xRotation = value; }
@@ -149,7 +157,10 @@ namespace AssimpSample
             string trafficLightFileName = "trafficlight.obj";
             m_trafficLightScene = new AssimpScene(trafficLightPath, trafficLightFileName, gl);
 
-            m_post = CreatePost(gl);
+            string basePath = CreatePath("Textures");
+            m_textureFiles = new string[] { Path.Combine(basePath, "wood-texture.jpg"), Path.Combine(basePath, "concrete-texture.jpg") };
+            m_textureCount = m_textureFiles.Length;
+            m_textureIds = new uint[m_textureCount];
         }
 
         /// <summary>
@@ -165,7 +176,7 @@ namespace AssimpSample
         #region Metode
         public static string CreatePath(string subDirectoryName)
         {
-            return Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), $"3D Models\\{subDirectoryName}");
+            return Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "3D Models", subDirectoryName);
         } 
 
         /// <summary>
@@ -180,14 +191,16 @@ namespace AssimpSample
             gl.Enable(OpenGL.GL_DEPTH_TEST);
             SetScenes();
 
-            // 2.1
+            // Lighting
             gl.ColorMaterial(OpenGL.GL_FRONT, OpenGL.GL_AMBIENT_AND_DIFFUSE);
             gl.Enable(OpenGL.GL_COLOR_MATERIAL);
 
             gl.Enable(OpenGL.GL_LIGHTING);
             gl.Enable(OpenGL.GL_NORMALIZE);
-        }
 
+            SetTextures(gl);
+        }
+        
         private void SetScenes()
         {
             m_motorcycleScene.LoadScene();
@@ -195,6 +208,37 @@ namespace AssimpSample
             m_trafficLightScene.LoadScene();
             m_trafficLightScene.Initialize();
         }
+        private void SetTextures(OpenGL gl)
+        {
+            gl.Enable(OpenGL.GL_TEXTURE_2D);
+            gl.TexEnv(OpenGL.GL_TEXTURE_ENV, OpenGL.GL_TEXTURE_ENV_MODE, OpenGL.GL_ADD);
+            gl.GenTextures(m_textureCount, m_textureIds);
+            for (int i = 0; i < m_textureCount; ++i)
+            {
+                // Pridruzi teksturu odgovarajucem identifikatoru
+                gl.BindTexture(OpenGL.GL_TEXTURE_2D, m_textureIds[i]);
+
+                // Ucitaj sliku i podesi parametre teksture
+                string filename = m_textureFiles[i];
+                Bitmap image = new Bitmap(filename);
+
+                // rotiramo sliku zbog koordinantog sistema opengl-a
+                image.RotateFlip(RotateFlipType.RotateNoneFlipY);
+
+                Rectangle rect = new Rectangle(0, 0, image.Width, image.Height);
+                // RGB format 
+                BitmapData imageData = image.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+
+                gl.TexImage2D(OpenGL.GL_TEXTURE_2D, 0, OpenGL.GL_RGB8, imageData.Width, imageData.Height, 0, OpenGL.GL_BGR, OpenGL.GL_UNSIGNED_BYTE, imageData.Scan0);
+                gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_MIN_FILTER, OpenGL.GL_NEAREST);
+                gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, OpenGL.GL_REPEAT);
+                gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_T, OpenGL.GL_REPEAT);
+
+                image.UnlockBits(imageData);
+                image.Dispose();
+            }
+        }
+
 
         /// <summary>
         ///  Iscrtavanje OpenGL kontrole.
@@ -288,23 +332,25 @@ namespace AssimpSample
             post.Stacks = 20;
             post.CreateInContext(gl);
             post.NormalGeneration = Normals.Smooth;
+            post.TextureCoords = true;
             return post;
         }
 
         private void CreateLampPost(OpenGL gl)
         {
+            Cylinder post = CreatePost(gl);
             Cube lamp = new Cube();
             float lampEdge = 7.5f;
-            
             gl.PushMatrix();
-            gl.Color(0.3f, 0.3f, 0.3f);
+            gl.BindTexture(OpenGL.GL_TEXTURE_2D, m_textureIds[(int)TextureObjects.Wood]);
+            gl.Color(0.29f, 0.16f, 0.10f);
             gl.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
-            m_post.Render(gl, RenderMode.Render);
+            post.Render(gl, RenderMode.Render);
             gl.PopMatrix();
             
             gl.PushMatrix();
-            gl.Color(0.6f, 0.6f, 0.6f);
-            gl.Translate(0.0f, m_post.Height + (lampEdge / 2), 0.0f);
+            gl.Color(0.56f, 0.25f, 0.0f);
+            gl.Translate(0.0f, post.Height + (lampEdge / 2), 0.0f);
             gl.Scale(lampEdge, lampEdge, lampEdge);
             CreateRedLight(gl);
             lamp.Render(gl, RenderMode.Render);
@@ -317,7 +363,7 @@ namespace AssimpSample
             float[] light1ambient = new float[] { 1.0f, 0.0f, 0.0f, 1.0f };
             float[] light1diffuse = new float[] { 0.3f, 0.3f, 0.3f, 1.0f };
             float[] light1specular = new float[] { 0.8f, 0.8f, 0.8f, 1.0f };
-            float[] spotDirection = new float[] { -1.0f, -1.0f, -1.0f, 0.0f };
+            float[] spotDirection = new float[] { -1.0f, -1.0f, -1.0f };
 
             gl.Light(OpenGL.GL_LIGHT1, OpenGL.GL_POSITION, light1pos);
             gl.Light(OpenGL.GL_LIGHT1, OpenGL.GL_AMBIENT, light1ambient);
