@@ -85,7 +85,7 @@ namespace AssimpSample
 
         private float[] m_yellowLightingPosition = new float[] { 300.0f, 2000.0f, 0f, 1.0f };
 
-        private float[] m_yellowLightingAmbient = new float[] { 0.9f, 0.9f, 0.0f, 0.7f };
+        private float[] m_yellowLightingAmbient = new float[] { 0.9f, 0.9f, 0.0f, 1f };
 
         private readonly int m_textureCount = 0;
 
@@ -298,7 +298,9 @@ namespace AssimpSample
             gl.PushMatrix();
             gl.Translate(-250.0f, 0.0f, 80.0f);
             PositionTrafficLight(gl);
+            gl.TexEnv(OpenGL.GL_TEXTURE_ENV, OpenGL.GL_TEXTURE_ENV_MODE, OpenGL.GL_MODULATE);
             PositionMotorcycle(gl);
+            gl.TexEnv(OpenGL.GL_TEXTURE_ENV, OpenGL.GL_TEXTURE_ENV_MODE, OpenGL.GL_ADD);
             PositionLampPosts(gl);
             gl.PopMatrix();
         }
@@ -397,8 +399,10 @@ namespace AssimpSample
         private void PositionBuildings(OpenGL gl)
         {
             Cube building = new Cube();
+
             gl.PushMatrix();
-            gl.Color(0.8f, 0.8f, 0.8f);
+
+            gl.Color(0.6f, 0.6f, 0.6f);
             gl.Translate(-700.0f, 700.0f, 600.0f);
             gl.Scale(250.0f, 700.0f, 350.0f);
             building.Render(gl, RenderMode.Render);
@@ -438,8 +442,8 @@ namespace AssimpSample
         {
             float[] light0pos = m_yellowLightingPosition;
             float[] light0ambient = m_yellowLightingAmbient;
-            float[] light0diffuse = new float[] { 0.3f, 0.3f, 0.3f, 1.0f };
-            float[] light0specular = new float[] { 0.8f, 0.8f, 0.8f, 1.0f };
+            float[] light0diffuse = new float[] { 0.8f, 0.8f, 0.8f, 1.0f };
+            float[] light0specular = new float[] { 0.1f, 0.1f, 0.1f, 1.0f };
 
             // ShowYellowLightPosition(gl, light0pos);
 

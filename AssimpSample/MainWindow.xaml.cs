@@ -98,6 +98,7 @@ namespace AssimpSample
                 case Key.S: m_world.RotationY -= 5.0f; break;
                 case Key.F: m_world.RotationY += 5.0f; break;
                 case Key.Add: m_world.SceneDistance = (m_world.SceneDistance > sceneDistanceLowerBoundary) ? m_world.SceneDistance - 125.0f : sceneDistanceLowerBoundary; break;
+                //case Key.Add: m_world.SceneDistance -= 125.0f; break;
                 case Key.Subtract: m_world.SceneDistance += 125.0f; break;
             }
         }

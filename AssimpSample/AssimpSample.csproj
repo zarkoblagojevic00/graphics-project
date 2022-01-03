@@ -111,10 +111,15 @@
     <None Include="3D Models\Motorcycle\DUC916_L.3DS">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="3D Models\TrafficLight\.mayaSwatches\trafficlight.mb.swatches" />
-    <None Include="3D Models\TrafficLight\trafficlight.fbx" />
-    <None Include="3D Models\TrafficLight\trafficlight.mb" />
-    <None Include="3D Models\TrafficLight\trafficlight.mtl" />
+    <None Include="3D Models\TrafficLight\trafficlight.fbx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\TrafficLight\trafficlight.mb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\TrafficLight\trafficlight.mtl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="3D Models\TrafficLight\trafficlight.obj">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -131,66 +136,126 @@
     <None Include="Dependencies\SharpGL.WPF.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="3D Models\Motorcycle\DUCCRB.JPG" />
-    <Resource Include="3D Models\Motorcycle\DUCFR.JPG" />
-    <Resource Include="3D Models\Motorcycle\DUCFRM.JPG" />
-    <Resource Include="3D Models\Motorcycle\DUCKM.JPG" />
-    <Resource Include="3D Models\Motorcycle\DUCL.JPG" />
-    <Resource Include="3D Models\Motorcycle\DUCLC.JPG" />
-    <Resource Include="3D Models\Motorcycle\DUCLM.JPG" />
-    <Resource Include="3D Models\Motorcycle\DUCLR.JPG" />
-    <Resource Include="3D Models\Motorcycle\DUCLRM.JPG" />
-    <Resource Include="3D Models\Motorcycle\DUCRDB.JPG" />
-    <Resource Include="3D Models\Motorcycle\DUCRYB.JPG" />
-    <Resource Include="3D Models\Motorcycle\DUCSH.JPG" />
-    <Resource Include="3D Models\Motorcycle\DUCSHM.JPG" />
-    <Resource Include="3D Models\Motorcycle\DUCTP.JPG" />
-    <Resource Include="3D Models\Motorcycle\DUCTPM.JPG" />
-    <Resource Include="3D Models\Motorcycle\DUCTPTR.JPG" />
-    <Resource Include="3D Models\Motorcycle\DUCTPTRM.JPG" />
-    <Resource Include="3D Models\Motorcycle\DUCWBF.JPG" />
-    <Resource Include="3D Models\Motorcycle\DUCWSH.JPG" />
-    <Resource Include="3D Models\Motorcycle\DUCWSHM.JPG" />
+    <None Include="3D Models\Motorcycle\DUCCRB.JPG">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\Motorcycle\DUCFR.JPG">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\Motorcycle\DUCFRM.JPG">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\Motorcycle\DUCKM.JPG">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\Motorcycle\DUCL.JPG">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\Motorcycle\DUCLC.JPG">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\Motorcycle\DUCLM.JPG">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\Motorcycle\DUCLR.JPG">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\Motorcycle\DUCLRM.JPG">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\Motorcycle\DUCRDB.JPG">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\Motorcycle\DUCRYB.JPG">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\Motorcycle\DUCSH.JPG">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\Motorcycle\DUCSHM.JPG">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\Motorcycle\DUCTP.JPG">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\Motorcycle\DUCTPM.JPG">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\Motorcycle\DUCTPTR.JPG">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\Motorcycle\DUCTPTRM.JPG">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\Motorcycle\DUCWBF.JPG">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\Motorcycle\DUCWSH.JPG">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\Motorcycle\DUCWSHM.JPG">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="3D Models\Textures\concrete-texture.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="3D Models\Textures\wood-texture.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Resource Include="3D Models\TrafficLight\10_BaseColor.jpg" />
-    <Resource Include="3D Models\TrafficLight\11_1_BaseColor.jpg" />
-    <Resource Include="3D Models\TrafficLight\11_2_BaseColor.jpg" />
-    <Resource Include="3D Models\TrafficLight\14_BaseColor.jpg" />
-    <Resource Include="3D Models\TrafficLight\1_BaseColor.jpg" />
-    <Resource Include="3D Models\TrafficLight\2_1_BaseColor.jpg" />
-    <Resource Include="3D Models\TrafficLight\3_BaseColor.jpg" />
-    <Resource Include="3D Models\TrafficLight\4_BaseColor.jpg" />
-    <Resource Include="3D Models\TrafficLight\5_1_BaseColor.jpg" />
-    <Resource Include="3D Models\TrafficLight\5_2_BaseColor.jpg" />
-    <Resource Include="3D Models\TrafficLight\5_3_BaseColor.jpg" />
-    <Resource Include="3D Models\TrafficLight\6_BaseColor.jpg" />
-    <Resource Include="3D Models\TrafficLight\7_BaseColor.jpg" />
-    <Resource Include="3D Models\TrafficLight\8_1_BaseColor.jpg" />
-    <Resource Include="3D Models\TrafficLight\8_3_BaseColor.jpg" />
-    <Resource Include="3D Models\TrafficLight\8_BaseColor.jpg" />
-    <Resource Include="3D Models\TrafficLight\9_BaseColor.jpg" />
-    <Resource Include="3D Models\TrafficLight\Textures\10_BaseColor.jpg" />
-    <Resource Include="3D Models\TrafficLight\Textures\11_1_BaseColor.jpg" />
-    <Resource Include="3D Models\TrafficLight\Textures\11_2_BaseColor.jpg" />
-    <Resource Include="3D Models\TrafficLight\Textures\14_BaseColor.jpg" />
-    <Resource Include="3D Models\TrafficLight\Textures\1_BaseColor.jpg" />
-    <Resource Include="3D Models\TrafficLight\Textures\2_1_BaseColor.jpg" />
-    <Resource Include="3D Models\TrafficLight\Textures\3_BaseColor.jpg" />
-    <Resource Include="3D Models\TrafficLight\Textures\4_BaseColor.jpg" />
-    <Resource Include="3D Models\TrafficLight\Textures\5_1_BaseColor.jpg" />
-    <Resource Include="3D Models\TrafficLight\Textures\5_2_BaseColor.jpg" />
-    <Resource Include="3D Models\TrafficLight\Textures\5_3_BaseColor.jpg" />
-    <Resource Include="3D Models\TrafficLight\Textures\6_BaseColor.jpg" />
-    <Resource Include="3D Models\TrafficLight\Textures\7_BaseColor.jpg" />
-    <Resource Include="3D Models\TrafficLight\Textures\8_1_BaseColor.jpg" />
-    <Resource Include="3D Models\TrafficLight\Textures\8_3_BaseColor.jpg" />
-    <Resource Include="3D Models\TrafficLight\Textures\8_BaseColor.jpg" />
-    <Resource Include="3D Models\TrafficLight\Textures\9_BaseColor.jpg" />
+    <None Include="3D Models\TrafficLight\10_BaseColor.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\TrafficLight\11_1_BaseColor.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\TrafficLight\11_2_BaseColor.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\TrafficLight\14_BaseColor.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\TrafficLight\1_BaseColor.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\TrafficLight\2_1_BaseColor.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\TrafficLight\3_BaseColor.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\TrafficLight\4_BaseColor.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\TrafficLight\5_1_BaseColor.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\TrafficLight\5_2_BaseColor.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\TrafficLight\5_3_BaseColor.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\TrafficLight\6_BaseColor.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\TrafficLight\7_BaseColor.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\TrafficLight\8_1_BaseColor.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\TrafficLight\8_3_BaseColor.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\TrafficLight\8_BaseColor.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\TrafficLight\9_BaseColor.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="3D Models\Motorcycle\LAKEREM.JPG">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <Content Include="AssimpLib\Assimp32.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
