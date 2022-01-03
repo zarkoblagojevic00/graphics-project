@@ -71,6 +71,14 @@ namespace AssimpSample
             1.0f, 0.0f, 1.0f,
         };
 
+        private readonly float[] m_groundTextures = new float[] { 
+            0.0f, 0.0f, 0.0f,
+            0.0f, 1.0f, 0.0f,
+            1.0f, 1.0f, 0.0f,
+            1.0f, 0.0f, 0.0f
+        };
+
+
         private readonly float m_spaceBetweenPosts = 400.0f;
         
         private readonly float m_roadWidth = 520.0f;
@@ -265,18 +273,24 @@ namespace AssimpSample
 
         private void PositionGround(OpenGL gl)
         {
-            gl.Color(0.3f, 0.3f, 0.3f);
-            gl.Begin(OpenGL.GL_QUADS);
-            gl.Normal(0.0f, 1.0f, 0.0f);
+            gl.MatrixMode(OpenGL.GL_TEXTURE);
+            gl.PushMatrix();
+            gl.Scale(0.8f, 0.8f, 0.8f);
 
+            gl.Normal(0.0f, 1.0f, 0.0f);
+            gl.BindTexture(OpenGL.GL_TEXTURE_2D, m_textureIds[(int)TextureObjects.Concrete]);
+
+            gl.Begin(OpenGL.GL_QUADS);
             for (int i = 0; i < m_groundVertices.Length; i += 3)
             {
-                gl.Vertex(
-                    m_groundScaleX * m_groundVertices[i],
-                              1.0f * m_groundVertices[i + 1],
-                    m_groundScaleZ * m_groundVertices[i + 2]);
+                gl.Vertex(m_groundScaleX * m_groundVertices[i], m_groundVertices[i + 1], m_groundScaleZ * m_groundVertices[i + 2]);
+                gl.TexCoord(m_groundTextures[i], m_groundTextures[i + 1]);
             }
             gl.End();
+            gl.BindTexture(OpenGL.GL_TEXTURE_2D, 0);
+            gl.PopMatrix();
+            gl.MatrixMode(OpenGL.GL_MODELVIEW);
+
         }
 
         private void PositionModels(OpenGL gl)
@@ -317,7 +331,7 @@ namespace AssimpSample
             gl.Translate(m_roadWidth, 0.0f, 0.0f);
             CreateLampPost(gl);
             gl.Translate(0.0f, 0.0f, -m_spaceBetweenPosts);
-            CreateLampPost(gl);
+            CreateLampPost(gl, true);
             gl.PopMatrix();
         }
 
@@ -336,7 +350,7 @@ namespace AssimpSample
             return post;
         }
 
-        private void CreateLampPost(OpenGL gl)
+        private void CreateLampPost(OpenGL gl, bool addLight = false)
         {
             Cylinder post = CreatePost(gl);
             Cube lamp = new Cube();
@@ -346,13 +360,17 @@ namespace AssimpSample
             gl.Color(0.29f, 0.16f, 0.10f);
             gl.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
             post.Render(gl, RenderMode.Render);
+            gl.BindTexture(OpenGL.GL_TEXTURE_2D, 0);
             gl.PopMatrix();
             
             gl.PushMatrix();
-            gl.Color(0.56f, 0.25f, 0.0f);
+            gl.Color(1f, 0.35f, 0.0f);
             gl.Translate(0.0f, post.Height + (lampEdge / 2), 0.0f);
             gl.Scale(lampEdge, lampEdge, lampEdge);
-            CreateRedLight(gl);
+            if (addLight)
+            {
+                CreateRedLight(gl);
+            }
             lamp.Render(gl, RenderMode.Render);
             gl.PopMatrix();
         }
@@ -371,7 +389,7 @@ namespace AssimpSample
             gl.Light(OpenGL.GL_LIGHT1, OpenGL.GL_SPECULAR, light1specular);
 
             gl.Light(OpenGL.GL_LIGHT1, OpenGL.GL_SPOT_CUTOFF, 40.0f);
-            gl.Light(OpenGL.GL_LIGHT1, OpenGL.GL_SPOT_EXPONENT, 5.0f);
+            gl.Light(OpenGL.GL_LIGHT1, OpenGL.GL_SPOT_EXPONENT, 5f);
             gl.Light(OpenGL.GL_LIGHT1, OpenGL.GL_SPOT_DIRECTION, spotDirection);
             gl.Enable(OpenGL.GL_LIGHT1);
         }
@@ -380,7 +398,7 @@ namespace AssimpSample
         {
             Cube building = new Cube();
             gl.PushMatrix();
-            gl.Color(0.3f, 0.3f, 0.3f);
+            gl.Color(0.8f, 0.8f, 0.8f);
             gl.Translate(-700.0f, 700.0f, 600.0f);
             gl.Scale(250.0f, 700.0f, 350.0f);
             building.Render(gl, RenderMode.Render);
