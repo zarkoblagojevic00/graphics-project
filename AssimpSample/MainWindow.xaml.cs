@@ -31,8 +31,8 @@ namespace AssimpSample
         /// </summary>
         World m_world = null;
 
-        readonly float rotationXUpperBoundary = 75.0f;
-        readonly float rotationXLowerBoundary = 5.0f;
+        readonly float rotationXUpperBoundary = 55.0f;
+        readonly float rotationXLowerBoundary = -15.0f;
         readonly float sceneDistanceLowerBoundary = 50.0f;
 
         #endregion Atributi
@@ -57,6 +57,18 @@ namespace AssimpSample
         }
 
         #endregion Konstruktori
+
+        public bool ShouldShowToolbar { get; private set; }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            ShouldShowToolbar = true;
+            lampPostScaleComboBox.ItemsSource = m_world.LampPostScaleValues;
+            rChannelComboBox.ItemsSource = m_world.ChannelValues;
+            gChannelComboBox.ItemsSource = m_world.ChannelValues;
+            bChannelComboBox.ItemsSource = m_world.ChannelValues;
+            velocityComboBox.ItemsSource = m_world.VelocityValues;
+        }
 
         /// <summary>
         /// Handles the OpenGLDraw event of the openGLControl1 control.
@@ -90,6 +102,9 @@ namespace AssimpSample
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
+            if (!ShouldShowToolbar)
+                return;
+
             switch (e.Key)
             {
                 case Key.F4: this.Close(); break;
@@ -100,7 +115,50 @@ namespace AssimpSample
                 case Key.Add: m_world.SceneDistance = (m_world.SceneDistance > sceneDistanceLowerBoundary) ? m_world.SceneDistance - 125.0f : sceneDistanceLowerBoundary; break;
                 //case Key.Add: m_world.SceneDistance -= 125.0f; break;
                 case Key.Subtract: m_world.SceneDistance += 125.0f; break;
+                case Key.V: DoAnimation(); break;
             }
+        }
+
+        private void DoAnimation()
+        {
+            ShouldShowToolbar = false;
+            m_world.DoAnimation();
+            ShouldShowToolbar = true;
+        }
+
+        private void lampPostScaleComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!ShouldShowToolbar)
+                return;
+            m_world.LampPostScale = (float)lampPostScaleComboBox.SelectedItem;
+        }
+
+        private void rChannelComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!ShouldShowToolbar)
+                return;
+            m_world.RChannel = (float)rChannelComboBox.SelectedItem;
+        }
+
+        private void gChannelComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!ShouldShowToolbar)
+                return;
+            m_world.GChannel = (float)gChannelComboBox.SelectedItem;
+        }
+
+        private void bChannelComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!ShouldShowToolbar)
+                return;
+            m_world.BChannel = (float)bChannelComboBox.SelectedItem;
+        }
+
+        private void velocityComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!ShouldShowToolbar)
+                return;
+            m_world.MotorVelocity = (float)velocityComboBox.SelectedItem;
         }
     }
 }

@@ -2,14 +2,50 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="SharpGL WPF Application" Height="500" Width="825" 
-        xmlns:sharpGL="clr-namespace:SharpGL.WPF;assembly=SharpGL.WPF" KeyDown="Window_KeyDown">
+        xmlns:sharpGL="clr-namespace:SharpGL.WPF;assembly=SharpGL.WPF" 
+        KeyDown="Window_KeyDown"
+        Loaded="Window_Loaded">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="Bool2Vis" />
+    </Window.Resources>
     <Grid>
-        
-        <!-- The OpenGL control provides a OpenGL drawing surface. -->
-        <sharpGL:OpenGLControl 
+
+        <DockPanel>
+            <ToolBarTray DockPanel.Dock="Top"
+                         Visibility="{Binding ShouldShowToolbar, Converter={StaticResource Bool2Vis}}">
+                <ToolBar HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Label x:Name="lampPostScaleLabel" Content="Lamp Post Scale" Height="26" VerticalAlignment="Top"/>
+                    <ComboBox x:Name="lampPostScaleComboBox" Height="26" Margin="0" SelectedIndex="3" VerticalAlignment="Top" Width="50" SelectionChanged="lampPostScaleComboBox_SelectionChanged"/>
+                    
+                    <Separator Height="26" Margin="0" VerticalAlignment="Top" Width="10"/>
+                   
+                    <Label x:Name="dotAmbientComp" Content="Light ambient" Height="26" VerticalAlignment="Top"/>
+                    <Separator Height="26" Margin="0" VerticalAlignment="Top" Width="2"/>
+                    
+                    <Label x:Name="rChannel" Content="R" Height="26" VerticalAlignment="Top"/>
+                    <ComboBox x:Name="rChannelComboBox" Height="26" Margin="0" SelectedIndex="100" VerticalAlignment="Top" Width="40" SelectionChanged="rChannelComboBox_SelectionChanged"/>
+                    <Separator Height="26" Margin="0" VerticalAlignment="Top" Width="2"/>
+
+                    <Label x:Name="gChannel" Content="G" Height="26" VerticalAlignment="Top"/>
+                    <ComboBox x:Name="gChannelComboBox" Height="26" Margin="0" SelectedIndex="100" VerticalAlignment="Top" Width="40" SelectionChanged="gChannelComboBox_SelectionChanged"/>
+                    <Separator Height="26" Margin="0" VerticalAlignment="Top" Width="2"/>
+
+                    <Label x:Name="bChannel" Content="B" Height="26" VerticalAlignment="Top"/>
+                    <ComboBox x:Name="bChannelComboBox" Height="26" Margin="0" SelectedIndex="0" VerticalAlignment="Top" Width="40" SelectionChanged="bChannelComboBox_SelectionChanged"/>
+
+                    <Separator Height="26" Margin="0" VerticalAlignment="Top" Width="10"/>
+
+                    <Label x:Name="velocity" Content="Velocity" Height="26" VerticalAlignment="Top"/>
+                    <ComboBox x:Name="velocityComboBox" Height="26" Margin="0" SelectedIndex="3" VerticalAlignment="Top" Width="40" SelectionChanged="velocityComboBox_SelectionChanged"/>
+                </ToolBar>
+            </ToolBarTray>
+            <!-- The OpenGL control provides a OpenGL drawing surface. -->
+            <sharpGL:OpenGLControl 
             Name="openGLControl" OpenGLDraw="openGLControl_OpenGLDraw" 
             OpenGLInitialized="openGLControl_OpenGLInitialized" Resized="openGLControl_Resized"
             DrawFPS="True" RenderContextType="FBO" FrameRate="60"/>
-        
+
+        </DockPanel>
+
     </Grid>
 </Window>

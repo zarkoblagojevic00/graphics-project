@@ -16,6 +16,9 @@ using SharpGL.SceneGraph.Core;
 using SharpGL;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Collections;
+using System.Collections.Generic;
+using System.Threading;
 
 namespace AssimpSample
 {
@@ -61,9 +64,9 @@ namespace AssimpSample
         private readonly float m_trafficLightScale = 15.0f;
 
         private readonly float m_groundScaleX = 2000.0f;
-        
+
         private readonly float m_groundScaleZ = 1800.0f;
-        
+
         private readonly float[] m_groundVertices = new float[] {
             1.0f, 0.0f,-1.0f,
            -1.0f, 0.0f,-1.0f,
@@ -71,7 +74,7 @@ namespace AssimpSample
             1.0f, 0.0f, 1.0f,
         };
 
-        private readonly float[] m_groundTextures = new float[] { 
+        private readonly float[] m_groundTextures = new float[] {
             0.0f, 0.0f, 0.0f,
             0.0f, 1.0f, 0.0f,
             1.0f, 1.0f, 0.0f,
@@ -80,12 +83,10 @@ namespace AssimpSample
 
 
         private readonly float m_spaceBetweenPosts = 400.0f;
-        
+
         private readonly float m_roadWidth = 520.0f;
 
         private float[] m_yellowLightingPosition = new float[] { 300.0f, 2000.0f, 0f, 1.0f };
-
-        private float[] m_yellowLightingAmbient = new float[] { 0.9f, 0.9f, 0.0f, 1f };
 
         private readonly int m_textureCount = 0;
 
@@ -145,6 +146,15 @@ namespace AssimpSample
             set { m_height = value; }
         }
 
+        public IList<float> LampPostScaleValues { get; internal set; }
+        public IList<float> ChannelValues { get; internal set; }
+        public IList<float> VelocityValues { get; internal set; }
+        public float LampPostScale { get; set; }
+        public float RChannel { get; set; }
+        public float GChannel { get; set; }
+        public float BChannel { get; set; }
+        public float MotorVelocity { get; set; }
+
         #endregion Properties
 
         #region Konstruktori
@@ -156,6 +166,8 @@ namespace AssimpSample
         {
             m_width = width;
             m_height = height;
+
+            InitializeChoosableValues();
 
             string motorcyclePath = CreatePath("Motorcycle");
             string motorcycleFileName = "DUC916_L.3DS";
@@ -169,6 +181,42 @@ namespace AssimpSample
             m_textureFiles = new string[] { Path.Combine(basePath, "wood-texture.jpg"), Path.Combine(basePath, "concrete-texture.jpg") };
             m_textureCount = m_textureFiles.Length;
             m_textureIds = new uint[m_textureCount];
+        }
+
+        public void DoAnimation()
+        {
+            Thread.Sleep(2000);
+            Console.WriteLine("Did Animation!");
+        }
+
+        private void InitializeChoosableValues()
+        {
+            InitializeLampScaleValues();
+            InitializeChannelValues();
+            InitializeVelocityValues();
+        }
+
+        private void InitializeLampScaleValues()
+        {
+            LampPostScaleValues = new List<float>() {
+                0.25f, 0.5f, 0.75f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f,
+            };
+        }
+
+        private void InitializeChannelValues()
+        {
+            ChannelValues = new List<float>();
+            for (int i = 0; i <= 100; i++)
+            {
+                ChannelValues.Add(i / 100.0f);
+            }
+        }
+
+        private void InitializeVelocityValues()
+        {
+            VelocityValues = new List<float>() {
+                0.25f, 0.5f, 0.75f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f
+            };
         }
 
         /// <summary>
@@ -185,7 +233,7 @@ namespace AssimpSample
         public static string CreatePath(string subDirectoryName)
         {
             return Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "3D Models", subDirectoryName);
-        } 
+        }
 
         /// <summary>
         ///  Korisnicka inicijalizacija i podesavanje OpenGL parametara.
@@ -207,8 +255,9 @@ namespace AssimpSample
             gl.Enable(OpenGL.GL_NORMALIZE);
 
             SetTextures(gl);
+            gl.LookAt(0.0f, 300.0f, -500.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
         }
-        
+
         private void SetScenes()
         {
             m_motorcycleScene.LoadScene();
@@ -257,6 +306,7 @@ namespace AssimpSample
 
             gl.PushMatrix();
             gl.Translate(0.0f, -50.0f, -m_sceneDistance);
+            gl.LookAt(0.0f, 15.0f, 40.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
             gl.Rotate(m_xRotation, 1.0f, 0.0f, 0.0f);
             gl.Rotate(m_yRotation, 0.0f, 1.0f, 0.0f);
 
@@ -268,6 +318,7 @@ namespace AssimpSample
 
             gl.PopMatrix();
             // Oznaci kraj iscrtavanja
+
             gl.Flush();
         }
 
@@ -343,7 +394,7 @@ namespace AssimpSample
             float postRadius = 4.5f;
             post.BaseRadius = postRadius;
             post.TopRadius = postRadius;
-            post.Height = 165;
+            post.Height = 165 * LampPostScale;
             post.Slices = 100;
             post.Stacks = 20;
             post.CreateInContext(gl);
@@ -441,7 +492,7 @@ namespace AssimpSample
         private void PositionYellowLight(OpenGL gl)
         {
             float[] light0pos = m_yellowLightingPosition;
-            float[] light0ambient = m_yellowLightingAmbient;
+            float[] light0ambient = { RChannel, GChannel, BChannel, 1.0f };
             float[] light0diffuse = new float[] { 0.8f, 0.8f, 0.8f, 1.0f };
             float[] light0specular = new float[] { 0.1f, 0.1f, 0.1f, 1.0f };
 
