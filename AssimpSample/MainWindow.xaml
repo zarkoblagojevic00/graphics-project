@@ -12,7 +12,7 @@
 
         <DockPanel>
             <ToolBarTray DockPanel.Dock="Top"
-                         Visibility="{Binding ShouldShowToolbar, Converter={StaticResource Bool2Vis}}">
+                         Visibility="{Binding World.NotInAnimation, Converter={StaticResource Bool2Vis}}">
                 <ToolBar HorizontalAlignment="Center" VerticalAlignment="Center">
                     <Label x:Name="lampPostScaleLabel" Content="Lamp Post Scale" Height="26" VerticalAlignment="Top"/>
                     <ComboBox x:Name="lampPostScaleComboBox" Height="26" Margin="0" SelectedIndex="3" VerticalAlignment="Top" Width="50" SelectionChanged="lampPostScaleComboBox_SelectionChanged"/>

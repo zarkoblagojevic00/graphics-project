@@ -15,7 +15,7 @@ using System.Windows.Navigation;
 using SharpGL.SceneGraph;
 using SharpGL;
 using Microsoft.Win32;
-
+using System.ComponentModel;
 
 namespace AssimpSample
 {
@@ -24,16 +24,23 @@ namespace AssimpSample
     /// </summary>
     public partial class MainWindow : Window
     {
-        #region Atributi
 
         /// <summary>
         ///	 Instanca OpenGL "sveta" - klase koja je zaduzena za iscrtavanje koriscenjem OpenGL-a.
         /// </summary>
-        World m_world = null;
+        
+
+        #region Atributi
+
+        World m_world;
+        public World World {
+            get { return m_world; }
+        }
 
         readonly float rotationXUpperBoundary = 55.0f;
         readonly float rotationXLowerBoundary = -15.0f;
         readonly float sceneDistanceLowerBoundary = 50.0f;
+
 
         #endregion Atributi
 
@@ -54,15 +61,13 @@ namespace AssimpSample
                 MessageBox.Show("Neuspesno kreirana instanca OpenGL sveta. Poruka greške: " + e.Message, "Poruka", MessageBoxButton.OK);
                 this.Close();
             }
+            this.DataContext = this;
         }
 
         #endregion Konstruktori
 
-        public bool ShouldShowToolbar { get; private set; }
-
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            ShouldShowToolbar = true;
             lampPostScaleComboBox.ItemsSource = m_world.LampPostScaleValues;
             rChannelComboBox.ItemsSource = m_world.ChannelValues;
             gChannelComboBox.ItemsSource = m_world.ChannelValues;
@@ -102,7 +107,7 @@ namespace AssimpSample
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            if (!ShouldShowToolbar)
+            if (!m_world.NotInAnimation)
                 return;
 
             switch (e.Key)
@@ -115,48 +120,41 @@ namespace AssimpSample
                 case Key.Add: m_world.SceneDistance = (m_world.SceneDistance > sceneDistanceLowerBoundary) ? m_world.SceneDistance - 125.0f : sceneDistanceLowerBoundary; break;
                 //case Key.Add: m_world.SceneDistance -= 125.0f; break;
                 case Key.Subtract: m_world.SceneDistance += 125.0f; break;
-                case Key.V: DoAnimation(); break;
+                case Key.V: m_world.DoAnimation(); break;
             }
-        }
-
-        private void DoAnimation()
-        {
-            ShouldShowToolbar = false;
-            m_world.DoAnimation();
-            ShouldShowToolbar = true;
         }
 
         private void lampPostScaleComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!ShouldShowToolbar)
+            if (!m_world.NotInAnimation)
                 return;
             m_world.LampPostScale = (float)lampPostScaleComboBox.SelectedItem;
         }
 
         private void rChannelComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!ShouldShowToolbar)
+            if (!m_world.NotInAnimation)
                 return;
             m_world.RChannel = (float)rChannelComboBox.SelectedItem;
         }
 
         private void gChannelComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!ShouldShowToolbar)
+            if (!m_world.NotInAnimation)
                 return;
             m_world.GChannel = (float)gChannelComboBox.SelectedItem;
         }
 
         private void bChannelComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!ShouldShowToolbar)
+            if (!m_world.NotInAnimation)
                 return;
             m_world.BChannel = (float)bChannelComboBox.SelectedItem;
         }
 
         private void velocityComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!ShouldShowToolbar)
+            if (!m_world.NotInAnimation)
                 return;
             m_world.MotorVelocity = (float)velocityComboBox.SelectedItem;
         }

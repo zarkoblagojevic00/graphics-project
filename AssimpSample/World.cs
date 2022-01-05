@@ -19,6 +19,8 @@ using System.Drawing.Imaging;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using System.Windows.Threading;
+using System.ComponentModel;
 
 namespace AssimpSample
 {
@@ -27,8 +29,22 @@ namespace AssimpSample
     /// <summary>
     ///  Klasa enkapsulira OpenGL kod i omogucava njegovo iscrtavanje i azuriranje.
     /// </summary>
-    public class World : IDisposable
+    public class World : IDisposable, INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged(PropertyChangedEventArgs e)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null)
+                handler(this, e);
+        }
+
+        protected void OnPropertyChanged(string propertyName)
+        {
+            OnPropertyChanged(new PropertyChangedEventArgs(propertyName));
+        }
+
         #region Atributi
 
         /// <summary>
@@ -96,6 +112,18 @@ namespace AssimpSample
 
         private enum TextureObjects { Wood = 0, Concrete };
 
+        private DispatcherTimer m_timer = new DispatcherTimer();
+
+        private int m_stepsNumber = 230;
+        private float[] m_translateMotorX; 
+        private float[] m_translateMotorZ;
+        private float[] m_rotateMotorY;
+        private float[] m_rotateMotorZ;
+        private int m_delay = 0;
+
+        private int m_turnBegin = 30;
+        private int m_turnEnd = 75;
+
         #endregion Atributi
 
         #region Properties
@@ -153,7 +181,31 @@ namespace AssimpSample
         public float RChannel { get; set; }
         public float GChannel { get; set; }
         public float BChannel { get; set; }
-        public float MotorVelocity { get; set; }
+
+        private float motorVelocity;
+        public float MotorVelocity
+        {
+            get { return motorVelocity; }
+            set
+            {
+                motorVelocity = value;
+                m_timer.Interval = TimeSpan.FromMilliseconds(40 / motorVelocity);
+            }
+        }
+
+        private bool notInAnimation;
+        public bool NotInAnimation
+        {
+            get { return notInAnimation; }
+            set
+            {
+                if (notInAnimation != value)
+                {
+                    notInAnimation = value;
+                    OnPropertyChanged("NotInAnimation");
+                }
+            }
+        }
 
         #endregion Properties
 
@@ -168,6 +220,7 @@ namespace AssimpSample
             m_height = height;
 
             InitializeChoosableValues();
+            InitializeAnimation();
 
             string motorcyclePath = CreatePath("Motorcycle");
             string motorcycleFileName = "DUC916_L.3DS";
@@ -183,9 +236,93 @@ namespace AssimpSample
             m_textureIds = new uint[m_textureCount];
         }
 
+        private void InitializeAnimation()
+        {
+            NotInAnimation = true;
+            m_timer.Tick += new EventHandler(MotorAnimation);
+            InitTranslateX();
+            InitTranslateZ();
+            InitRotateY();
+            InitRotateZ();
+        }
+
+        private void MotorAnimation(object sender, EventArgs e)
+        {
+            m_delay++;
+            if (m_delay > m_stepsNumber - 5)
+                ResetAnimation();
+        }
+
+        private void ResetAnimation()
+        {
+            m_timer.Stop();
+            NotInAnimation = true;
+            m_delay = 0;
+        }
+
+        private void InitTranslateX()
+        {
+            m_translateMotorX = new float[m_stepsNumber];
+            float val = 0.0f;
+
+            for (int i = 0; i < m_stepsNumber; i++)
+            {
+                if (i > m_turnBegin + 3)
+                    val += 5.0f;
+                m_translateMotorX[i] = val;
+            }
+        }
+
+        private void InitTranslateZ()
+        {
+            m_translateMotorZ = new float[m_stepsNumber];
+            float val = 0.0f;
+
+            for (int i = 0; i < m_stepsNumber; i++)
+            {
+                if (i < m_turnEnd - 8)
+                {
+                    val += 5.0f;
+                }
+                m_translateMotorZ[i] = val;
+
+            }
+        }
+
+        private void InitRotateY()
+        {
+            m_rotateMotorY = new float[m_stepsNumber];
+            float val = 0.0f;
+
+            for (int i = 0; i < m_stepsNumber; i++)
+            {
+                if (i > m_turnBegin && i < m_turnEnd)
+                    val += 2;
+                
+                m_rotateMotorY[i] = val;
+            }
+        }
+
+        private void InitRotateZ()
+        {
+            m_rotateMotorZ = new float[m_stepsNumber];
+            float val = 0.0f;
+            float turnMiddle = (m_turnBegin + m_turnEnd) / 2.0f;
+            for (int i = 0; i < m_stepsNumber; i++)
+            {
+                if (i > m_turnBegin - 5 && i < turnMiddle - 5)
+                    val -= 2.0f;
+                if (i >= turnMiddle + 5 && i < m_turnEnd + 10)
+                    val += 1.8f;
+
+                m_rotateMotorZ[i] = val;
+            }
+        }
+
         public void DoAnimation()
         {
-            Thread.Sleep(2000);
+            NotInAnimation = false;
+            m_timer.Start();
             Console.WriteLine("Did Animation!");
         }
 
@@ -215,7 +352,7 @@ namespace AssimpSample
         private void InitializeVelocityValues()
         {
             VelocityValues = new List<float>() {
-                0.25f, 0.5f, 0.75f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f
+                0.25f, 0.5f, 0.75f, 1.0f, 2.0f, 3.0f
             };
         }
 
@@ -255,7 +392,6 @@ namespace AssimpSample
             gl.Enable(OpenGL.GL_NORMALIZE);
 
             SetTextures(gl);
-            gl.LookAt(0.0f, 300.0f, -500.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
         }
 
         private void SetScenes()
@@ -369,6 +505,8 @@ namespace AssimpSample
             gl.PushMatrix();
             gl.Translate(100.0f, 10.0f, 100.0f);
             gl.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
+            gl.Translate(m_translateMotorX[m_delay], 0.0f, m_translateMotorZ[m_delay]);
+            gl.Rotate(0.0f, m_rotateMotorY[m_delay], m_rotateMotorZ[m_delay]);
             gl.Scale(m_motorcycleScale, m_motorcycleScale, m_motorcycleScale);
             m_motorcycleScene.Draw();
             gl.PopMatrix();
